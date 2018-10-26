@@ -1,9 +1,7 @@
 variable project { }
-variable region { }
 
 provider "google" {
   project = "${var.project}"
-  region  = "${var.region}"
 }
 
 resource "google_service_account" "worker" {
@@ -117,10 +115,6 @@ resource "google_service_account_key" "worker" {
   public_key_type = "TYPE_X509_PEM_FILE"
 }
 
-output "worker_account_json" {
-  value = "${base64decode(google_service_account_key.worker.private_key)}"
-}
-
 
 resource "google_service_account" "cleanup" {
   account_id   = "travis-ci-vm-cleanup"
@@ -172,6 +166,15 @@ resource "google_service_account_key" "cleanup" {
   public_key_type = "TYPE_X509_PEM_FILE"
 }
 
+
+output "worker_account_json" {
+  value = "${base64decode(google_service_account_key.worker.private_key)}"
+}
+
 output "cleanup_account_json" {
   value = "${base64decode(google_service_account_key.cleanup.private_key)}"
+}
+
+output "worker_service_account_email" {
+  value = "${google_service_account.worker.email}"
 }
